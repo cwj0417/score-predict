@@ -5,26 +5,29 @@
                 <div class="catalog">
                     <div class="catalog-wrapper">
                         <div class="area-levels">
-                            <div class="area active" v-for="area in areas">
+                            <div class="area" @click="setActArea(area.id)"
+                                :class="{ active: activeIds.area === area.id }" v-for="area in areas">
                                 <div class="area-title">
                                     <div class="text">
-                                        {{ area.name }}
+                                        {{ area.divisionName }}
                                     </div>
                                     <div class="arrow"></div>
                                 </div>
                                 <div class="country-levels">
-                                    <div class="country active" v-for="country in countries[area.id]">
+                                    <div class="country" @click="setActCont(country.id)"
+                                        :class="{ active: activeIds.cont === country.id }"
+                                        v-for="country in countries[area.id]">
                                         <div class="country-title">
                                             <div class="check"></div>
                                             <div class="logo"
                                                 style="background-image: url(https://cdn.leisu.com/nationflag/1552909490161265.png!avatar);">
                                             </div>
-                                            <div class="text">{{ country.name }}</div>
+                                            <div class="text">{{ country.divisionName }}</div>
                                         </div>
                                         <div class="competition-levels">
                                             <div class="competition" v-for="competition in competitions[country.id]">
                                                 <NuxtLink class="link" :page-key="route => route.fullPath"
-                                                    :to="'/data/comp-' + competition.id">{{ competition.name }}
+                                                    :to="'/data/comp-' + competition.id">{{ competition.divisionName }}
                                                 </NuxtLink>
                                                 <div class="collection iconfont icon-collecth"></div>
                                             </div>
@@ -43,40 +46,37 @@
     </div>
 </template>
 <script setup>
-const areas = [{ name: '国际', id: 'international' }, { name: '欧洲', id: 'european' }]
-const countries = {
-    international: [
-        {
-            name: '国际赛事',
-            id: 'international_international',
-        },
-        {
-            name: '沙滩赛事',
-            id: 'international_beach',
-        }
-    ],
-    european: [
-        {
-            name: '欧洲',
-            id: 'european_european'
-        },
-        {
-            name: '英格兰',
-            id: 'european_england'
-        }
-    ]
+
+import { onMounted, reactive, ref } from 'vue';
+
+const activeIds = reactive({
+    area: '',
+    cont: '',
+})
+
+const areas = ref([])
+const countries = reactive({})
+const competitions = reactive({})
+
+onMounted(() => {
+    $fetch('/api/v1/sport/scoreDivision/list/0').then(({ result }) => {
+        areas.value = result
+    })
+})
+
+const setActArea = (aid) => {
+    activeIds.area = aid
+    $fetch('/api/v1/sport/scoreDivision/list/' + aid).then(({ result }) => {
+        countries[aid] = result
+    })
 }
-const competitions = {
-    european_european: [
-        {
-            name: '世欧预',
-            id: '2'
-        },
-        {
-            name: '欧洲杯',
-            id: '3'
-        }
-    ],
-    european_england: []
+
+const setActCont = (cid) => {
+    activeIds.cont = cid
+    if (!competitions[cid]) {
+        $fetch('/api/v1/sport/scoreDivision/list/' + cid).then(({ result }) => {
+            competitions[cid] = result
+        })
+    }
 }
 </script>

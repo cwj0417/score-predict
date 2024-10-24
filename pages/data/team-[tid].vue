@@ -1,5 +1,6 @@
 <template>
     <div>
-        comp
+        team
+        <NuxtPage />
     </div>
 </template>
