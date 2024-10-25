@@ -47,7 +47,7 @@
 </template>
 <script setup>
 
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 const activeIds = reactive({
     area: '',
@@ -58,10 +58,10 @@ const areas = ref([])
 const countries = reactive({})
 const competitions = reactive({})
 
-onMounted(() => {
-    $fetch('/api/v1/sport/scoreDivision/list/0').then(({ result }) => {
-        areas.value = result
-    })
+useAsyncData('nav-data', () => $fetch('/api/v1/sport/scoreDivision/list/0')).then((res) => {
+    console.log(res)
+    const { data } = res
+    areas.value = data?.value?.result
 })
 
 const setActArea = (aid) => {
