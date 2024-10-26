@@ -15,7 +15,7 @@
                                         <div class="arrow"></div>
                                     </div>
                                     <div class="country-levels">
-                                        <div class="country" @click="setActCont(country.id)"
+                                        <div class="country" @click.prevent.stop="setActCont(country.id)"
                                             :class="{ active: activeIds.cont === country.id }"
                                             v-for="country in countries[area.id]">
                                             <div class="country-title">
@@ -66,6 +66,10 @@ useAsyncData('nav-data', () => $fetch('/api/v1/sport/scoreDivision/list/0')).the
 })
 
 const setActArea = (aid) => {
+    if (activeIds.area === aid) {
+        activeIds.area = ''
+        return
+    }
     activeIds.area = aid
     $fetch('/api/v1/sport/scoreDivision/list/' + aid).then(({ result }) => {
         countries[aid] = result
@@ -73,6 +77,10 @@ const setActArea = (aid) => {
 }
 
 const setActCont = (cid) => {
+    if (activeIds.cont === cid) {
+        activeIds.cont = ''
+        return
+    }
     activeIds.cont = cid
     if (!competitions[cid]) {
         $fetch('/api/v1/sport/scoreDivision/list/' + cid).then(({ result }) => {

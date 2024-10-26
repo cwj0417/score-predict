@@ -22,21 +22,23 @@
                 <div class="data-wrapper ">
                     <div class="match-table-type">
                         <!-- 这里有stage和rounds和另外一个v-if, 展示筛选器 -->
-                         
+
                         <div class="stage" v-if="stageList">
-                            <div class="stage_name" v-for="stage in stageList">
+                            <div class="stage_name" :class="{ active: currentStage === stage.id }"
+                                @click="(changeStage(stage))" v-for="stage in stageList">
                                 {{ stage.groupName }}
                             </div>
                         </div>
 
                         <!-- rounds肯定是v-if的 -->
-                         <div class="rounds" v-if="roundList">
+                        <div class="rounds" v-if="roundList">
                             <div class="wrapper active">
-                                <div class="round" v-for="round in roundList">
+                                <div class="round" :class="{ active: currentRound === round.id }"
+                                    @click="(changeRound(round))" v-for="round in roundList">
                                     {{ round.roundName }}
                                 </div>
                             </div>
-                         </div>
+                        </div>
                         <div class="table-match">
                             <!-- 这里有2个v-if, 估计是不同类型的表格 -->
                             <div class="table-wrapper match">
@@ -45,6 +47,7 @@
                                         <tr>
                                             <!-- 这里有2个v-if -->
                                             <!----> <!---->
+                                            <th v-if="roundList">轮次</th>
                                             <th>时间</th>
                                             <th class="team">主队</th>
                                             <th>
@@ -67,6 +70,7 @@
                                         <!---->
                                         <tr class="match_data" v-for="item in list">
                                             <!----> <!---->
+                                            <td class="round_num" v-if="roundList">{{ item.roundName }}</td>
                                             <td class="time">{{ item.competitionTime }}</td>
                                             <td class="home">
                                                 <NuxtLink class="link" :to="'/data/team-' + item.homeTeamTeamId">
@@ -127,11 +131,48 @@ const list = ref()
 const roundList = ref()
 const stageList = ref()
 
+const currentStage = ref()
+
+const changeStage = (stage) => {
+    currentStage.value = stage.id
+    $fetch(`/api/v1/sport/competitionSeason/detail`, {
+        method: 'POST',
+        body: {
+            seasonId: stage.seasonId,
+            groupId: stage.id,
+            roundId: null,
+        }
+    }).then((res) => {
+        const { competitionScheduleList } = res.result;
+        list.value = competitionScheduleList
+    })
+}
+
+const currentRound = ref()
+
+const changeRound = (round) => {
+    console.log(round)
+    currentRound.value = round.id
+    $fetch(`/api/v1/sport/competitionSeason/detail`, {
+        method: 'POST',
+        body: {
+            seasonId: round.seasonId,
+            groupId: null,
+            roundId: round.id,
+        }
+    }).then((res) => {
+        const { competitionScheduleList } = res.result;
+        list.value = competitionScheduleList
+    })
+}
+
 useAsyncData('comp-data', () => $fetch(`/api/v1/sport/scoreDivision/${route.params.cid}`)).then((res) => {
     const { data } = res
-    const { divisionInfo, competitionSeasonList, competitionScoreList, competitionScheduleList, competitionRoundList, competitionGroupList } = data.value.result;
+    const { competitionScheduleList, competitionRoundList, competitionGroupList } = data.value.result;
     list.value = competitionScheduleList
-    roundList.value = competitionRoundList
-    stageList.value = competitionGroupList
+    currentRound.value = competitionRoundList?.[0].id
+    currentStage.value = competitionGroupList?.[0].id
+    roundList.value = competitionRoundList?.sort((a, b) => +a.sort - +b.sort)
+    stageList.value = competitionGroupList?.sort((a, b) => +a.sort - +b.sort)
 })
 </script>

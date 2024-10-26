@@ -29,10 +29,10 @@
 import { ref } from 'vue'
 const route = useRoute()
 const info = ref()
-useAsyncData('comp-data', () => $fetch(`/api/v1/sport/scoreDivision/${route.params.cid}`)).then((res) => {
+useAsyncData('comp-data', () => $fetch(`/api/v1/sport/divisionInfo/${route.params.cid}`)).then((res) => {
     const { data } = res
     // console.log(data.value.result)
-    const { divisionInfo, competitionSeasonList, competitionScoreList, competitionScheduleList, competitionRoundList, competitionGroupList } = data.value.result;
+    const { divisionInfo } = data.value.result;
     info.value = divisionInfo
 })
 </script>
