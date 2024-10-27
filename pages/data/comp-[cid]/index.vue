@@ -79,10 +79,14 @@
                                             </td>
                                             <td class="score">
                                                 <a class="link">
-                                                    <!-- <div class="whole_score">sss
+                                                    <div v-if="item.competitionStatus === 1" class="whole_score">{{
+                                                        item.homeAcquisition }}-{{
+                                                            item.guestAcquisition }}
                                                     </div>
-                                                    <div class="half_score">111</div> -->
-                                                    <span class="no-score">VS</span>
+                                                    <div v-if="item.competitionStatus === 1" class="half_score">半: {{
+                                                        item.halfHomeAcquisition }}-{{
+                                                            item.halfGuestAcquisition }}</div>
+                                                    <span v-if="item.competitionStatus !== 1" class="no-score">VS</span>
                                                 </a>
                                             </td>
                                             <td class="away">
@@ -91,7 +95,7 @@
                                                 </NuxtLink>
                                             </td>
                                             <td class="odd-asian">
-                                                <div class="odd-wrapper">
+                                                <div class="odd-wrapper" v-if="item.competitionStatus === 1">
                                                     <div class="asian">
                                                         {{ item.fullLetGoal }}
                                                     </div>
@@ -101,7 +105,7 @@
                                                 </div>
                                             </td>
                                             <td class="odd-europe">
-                                                <div class="odd-wrapper">
+                                                <div class="odd-wrapper" v-if="item.competitionStatus === 1">
                                                     <div class="europe">
                                                         {{ item.fullSizeGoal }}
                                                     </div>
