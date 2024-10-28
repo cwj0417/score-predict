@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
+
   nitro: {
     devProxy: {
       '/api': {
@@ -12,5 +13,12 @@ export default defineNuxtConfig({
     routeRules: {
       '/api/**': { proxy: 'http://47.101.207.196:6060/api/**' }
     }
+  },
+
+  modules: ['nuxt-echarts'],
+  
+  echarts: {
+    charts: ['BarChart', 'LineChart'],
+    components: ['GridComponent', 'TooltipComponent', 'LegendComponent']
   }
 })
