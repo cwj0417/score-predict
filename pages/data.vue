@@ -10,7 +10,7 @@
                                     :class="{ active: activeIds.area === area.id }" v-for="area in areas">
                                     <div class="area-title">
                                         <div class="text">
-                                            {{ area.divisionName }}
+                                            {{ area.name }}
                                         </div>
                                         <div class="arrow"></div>
                                     </div>
@@ -21,9 +21,9 @@
                                             <div class="country-title">
                                                 <div class="check"></div>
                                                 <div class="logo"
-                                                    style="background-image: url(https://cdn.leisu.com/nationflag/1552909490161265.png!avatar);">
+                                                    :style="country.flagIcon ? `background-image: url(${country.flagIcon});` : ''">
                                                 </div>
-                                                <div class="text">{{ country.divisionName }}</div>
+                                                <div class="text">{{ country.name }}</div>
                                             </div>
                                             <div class="competition-levels">
                                                 <div class="competition"
@@ -60,9 +60,18 @@ const areas = ref([])
 const countries = reactive({})
 const competitions = reactive({})
 
-useAsyncData('nav-data', () => $fetch('/api/v1/sport/scoreDivision/list/0')).then((res) => {
-    const { data } = res
-    areas.value = data?.value?.result
+// 新接口获取全部地区数据
+useAsyncData('nav-data', () => $fetch('/sport/api/v3/regions/all')).then((res) => {
+    const data = res?.data?.value?.result || res?.data?.result || res?.result || []
+    console.log(data)
+    // 一级分类/大洲
+    areas.value = data.filter(item => item.level === 0 || item.level === 1)
+    // 国家，按parentId分组
+    data.filter(item => item.level === 2).forEach(country => {
+        if (!countries[country.parentId]) countries[country.parentId] = []
+        countries[country.parentId].push(country)
+    })
+    // competitions 需要后端接口支持，暂不处理
 })
 
 const setActArea = (aid) => {
@@ -71,9 +80,7 @@ const setActArea = (aid) => {
         return
     }
     activeIds.area = aid
-    $fetch('/api/v1/sport/scoreDivision/list/' + aid).then(({ result }) => {
-        countries[aid] = result
-    })
+    // 不再需要请求，数据已全部获取
 }
 
 const setActCont = (cid) => {
@@ -82,10 +89,6 @@ const setActCont = (cid) => {
         return
     }
     activeIds.cont = cid
-    if (!competitions[cid]) {
-        $fetch('/api/v1/sport/scoreDivision/list/' + cid).then(({ result }) => {
-            competitions[cid] = result
-        })
-    }
+    // competitions 需要后端接口支持，暂不处理
 }
 </script>

@@ -70,7 +70,7 @@ const comps = [{
     id: 120
 }, {
     name: '英超',
-    id: 82
+    id: 8
 }]
 const teams = [{
     name: '尤文图斯',

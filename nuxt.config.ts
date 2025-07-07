@@ -5,13 +5,13 @@ export default defineNuxtConfig({
 
   nitro: {
     devProxy: {
-      '/api': {
-        target: 'http://47.101.207.196:6060/api',
+      '/sport/api': {
+        target: 'http://47.101.207.196:6060/sport/api',
         changeOrigin: true,
       }
     },
     routeRules: {
-      '/api/**': { proxy: 'http://47.101.207.196:6060/api/**' }
+      '/sport/api/**': { proxy: 'http://47.101.207.196:6060/sport/api/**' }
     }
   },
 
