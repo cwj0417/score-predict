@@ -41,62 +41,23 @@
 
     <!-- Content -->
     <div v-else class="lineup-content">
-      <!-- Starting Lineup -->
+      <!-- Player List -->
       <div class="lineup-section">
         <div class="section-header">
           <div class="section-title">
             <span class="indicator starter"></span>
-            <span class="title">首发阵容</span>
-            <span class="count">({{ filteredStarters.length }})</span>
+            <span class="title">球员名单</span>
+            <span class="count">({{ filteredPlayers.length }})</span>
           </div>
         </div>
         <div class="players-grid">
           <div
-            v-for="player in filteredStarters"
+            v-for="player in filteredPlayers"
             :key="player.playerId"
             class="player-card"
             @click="goToPlayer(player.playerId)"
           >
-            <div class="player-number">{{ player.shirtNumber }}</div>
-            <div class="player-avatar">
-              <img :src="player.photoUrl || '/default-avatar.png'" :alt="player.name" />
-            </div>
-            <div class="player-info">
-              <div class="player-name">{{ player.name }}</div>
-              <div class="player-details">
-                <span class="position">{{ player.positionName }}</span>
-                <span class="age">{{ player.age }}岁</span>
-                <span class="nationality">{{ player.nationality }}</span>
-              </div>
-            </div>
-            <div class="player-stats">
-              <div class="market-value">{{ formatValue(player.marketValue) }}</div>
-              <div class="performance">
-                <span class="goals">{{ player.goals }}球</span>
-                <span class="assists">{{ player.assists }}助攻</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Substitutes -->
-      <div class="lineup-section">
-        <div class="section-header">
-          <div class="section-title">
-            <span class="indicator substitute"></span>
-            <span class="title">替补阵容</span>
-            <span class="count">({{ filteredSubstitutes.length }})</span>
-          </div>
-        </div>
-        <div class="players-grid">
-          <div
-            v-for="player in filteredSubstitutes"
-            :key="player.playerId"
-            class="player-card"
-            @click="goToPlayer(player.playerId)"
-          >
-            <div class="player-number">{{ player.shirtNumber }}</div>
+            <div class="player-number">{{ player.shirtNumber || '-' }}</div>
             <div class="player-avatar">
               <img :src="player.photoUrl || '/default-avatar.png'" :alt="player.name" />
             </div>
@@ -157,53 +118,48 @@ const selectedPosition = ref('all')
 const sortBy = ref('shirtNumber')
 
 // Position filters
-const positionFilters = [
-  { value: 'all', label: '全部' },
-  { value: 'GK', label: '守门员' },
-  { value: 'DEF', label: '后卫' },
-  { value: 'MID', label: '中场' },
-  { value: 'FWD', label: '前锋' }
-]
-
-// Computed properties
-const filteredStarters = computed(() => {
-  if (!squadData.value) return []
-  return filterAndSortPlayers(squadData.value.starters)
+const positionFilters = computed(() => {
+  const positions = [{ value: 'all', label: '全部' }]
+  
+  if (squadData.value && squadData.value.allPlayers) {
+    const uniquePositions = [...new Set(squadData.value.allPlayers.map(p => p.positionName).filter(Boolean))]
+    uniquePositions.forEach(position => {
+      positions.push({ value: position, label: position })
+    })
+  }
+  
+  return positions
 })
 
-const filteredSubstitutes = computed(() => {
-  if (!squadData.value) return []
-  return filterAndSortPlayers(squadData.value.substitutes)
+// Computed properties
+const filteredPlayers = computed(() => {
+  if (!squadData.value || !squadData.value.allPlayers) return []
+  return filterAndSortPlayers(squadData.value.allPlayers)
 })
 
 const teamStats = computed(() => {
   if (!squadData.value) return { totalPlayers: 0, averageAge: 0, foreignPlayers: 0, totalValue: 0 }
-  
   const allPlayers = squadData.value.allPlayers || []
   const totalPlayers = allPlayers.length
   const averageAge = totalPlayers > 0 ? (allPlayers.reduce((sum, p) => sum + p.age, 0) / totalPlayers).toFixed(1) : 0
   const foreignPlayers = allPlayers.filter(p => p.nationality && p.nationality !== '中国').length
   const totalValue = allPlayers.reduce((sum, p) => sum + (p.marketValue || 0), 0)
-  
   return { totalPlayers, averageAge, foreignPlayers, totalValue }
 })
 
 // Methods
 const filterAndSortPlayers = (players) => {
   if (!players) return []
-  
   let filtered = players
-  
   // Filter by position
   if (selectedPosition.value !== 'all') {
-    filtered = filtered.filter(player => player.position === selectedPosition.value)
+    filtered = filtered.filter(player => player.positionName === selectedPosition.value)
   }
-  
   // Sort
   filtered.sort((a, b) => {
     switch (sortBy.value) {
       case 'shirtNumber':
-        return a.shirtNumber - b.shirtNumber
+        return (a.shirtNumber || 0) - (b.shirtNumber || 0)
       case 'age':
         return a.age - b.age
       case 'goals':
@@ -216,7 +172,6 @@ const filterAndSortPlayers = (players) => {
         return 0
     }
   })
-  
   return filtered
 }
 
@@ -232,11 +187,9 @@ const fetchData = async () => {
   try {
     loading.value = true
     error.value = ''
-    
     const teamId = route.params.tid
     const response = await $fetch(`/sport/api/v3/team/${teamId}/squad`)
-    
-    if (response.code === 0) {
+    if (response.code === 0 || response.code === 1) {
       squadData.value = response.result
     } else {
       error.value = response.message || '获取数据失败'
@@ -391,67 +344,66 @@ onMounted(() => {
 .lineup-section {
   background: white;
   border-radius: 8px;
-  padding: 24px;
+  padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .section-header {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .section-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .indicator {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
 .indicator.starter {
-  background: #e53e3e;
-}
-
-.indicator.substitute {
-  background: #f6ad55;
+  background: #38a169;
 }
 
 .count {
   color: #666;
   font-weight: normal;
+  font-size: 14px;
 }
 
 .players-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .player-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px;
-  background: #f8f9fa;
+  padding: 12px 16px;
+  background: white;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  border: 1px solid #e2e8f0;
 }
 
 .player-card:hover {
-  background: #e8f4f8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+  border-color: #cbd5e0;
 }
 
 .player-number {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,8 +416,8 @@ onMounted(() => {
 }
 
 .player-avatar {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -500,10 +452,14 @@ onMounted(() => {
   padding: 2px 8px;
   background: #e2e8f0;
   border-radius: 12px;
+  font-size: 12px;
 }
 
 .player-stats {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
   flex-shrink: 0;
 }
 
@@ -511,7 +467,6 @@ onMounted(() => {
   font-weight: 600;
   font-size: 16px;
   color: #333;
-  margin-bottom: 4px;
 }
 
 .performance {
@@ -522,9 +477,8 @@ onMounted(() => {
 }
 
 .performance span {
-  padding: 2px 8px;
-  background: #e2e8f0;
-  border-radius: 12px;
+  font-size: 14px;
+  color: #666;
 }
 
 .team-stats {
@@ -585,7 +539,9 @@ onMounted(() => {
   }
   
   .players-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   
   .team-stats {
