@@ -47,7 +47,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="match_data" v-for="item in props.matches" :key="item.id">
+                                        <tr class="match_data" v-for="item in matches" :key="item.id">
                                             <td v-if="showGroupColumn">{{ item.groupName || '-' }}</td>
                                             <td>{{ item.roundName }}</td>
                                             <td>{{ item.matchDate }} {{ item.matchTime }}</td>
@@ -109,7 +109,14 @@ const currentGroupId = ref(props.currentGroup?.id || (props.groups && props.grou
 const showGroupColumn = computed(() => props.groups && props.groups.length > 0)
 const matches = ref(props.matches || [])
 
-watch([currentStageId, currentGroupId], fetchMatches, { immediate: true })
+// 监听 props.matches 变化，同步更新本地 matches
+watch(() => props.matches, (newMatches) => {
+    if (newMatches && newMatches.length > 0) {
+        matches.value = newMatches
+    }
+}, { immediate: true })
+
+watch([currentStageId, currentGroupId], fetchMatches)
 
 function selectStage(stage) {
     currentStageId.value = stage.id
@@ -122,6 +129,7 @@ function selectGroup(group) {
 }
 
 async function fetchMatches() {
+    if (!currentStageId.value) return
     const body = {
         competitionId: +props.competition?.id || 0,
         groupId: currentGroupId.value ? +currentGroupId.value : null,
@@ -139,23 +147,30 @@ async function fetchMatches() {
 <style scoped>
 .stage-filter {
     display: flex;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 6px;
     background: #fff;
     border-radius: 28px 28px 0 0;
     padding: 16px 24px 0 24px;
+    align-content: flex-start;
 }
 .stage-btn {
-    min-width: 80px;
+    min-width: 24px;
+    width: auto;
     text-align: center;
-    padding: 4px 0;
-    font-size: 16px;
+    padding: 2px 6px;
+    font-size: 12px;
     color: #c00;
-    border: 2px solid #f2d6d6;
-    border-radius: 20px;
+    border: 1px solid #f2d6d6;
+    border-radius: 4px;
     background: #fff;
     cursor: pointer;
     transition: all 0.2s;
     margin-bottom: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    height: 24px;
+    line-height: 20px;
 }
 .stage-btn.active {
     color: #fff;

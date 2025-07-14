@@ -39,7 +39,13 @@
             <NuxtLink class="tab" :class="{ active: isTabActive('lineup') }" :to="`/data/team-${route.params.tid}/lineup`">阵容</NuxtLink>
             <NuxtLink class="tab" :class="{ active: isTabActive('transfer') }" :to="`/data/team-${route.params.tid}/transfer`">转会</NuxtLink>
         </div>
-        <NuxtPage :teamInfo="teamInfo" :honors="honors" />
+        <NuxtPage 
+          :teamInfo="teamInfo" 
+          :honors="honors" 
+          :competitions="competitions" 
+          :seasons="seasons"
+          :allSeasons="allSeasons" 
+        />
     </div>
 </template>
 <script setup>
@@ -48,11 +54,74 @@ import { useRoute, useAsyncData } from '#imports'
 const route = useRoute()
 const teamInfo = ref({})
 const honors = ref([])
+const competitions = ref([])
+const seasons = ref([])
+const allSeasons = ref(new Map()) // 存储每个赛事的赛季数据
+const availableSeasons = ref([]) // 临时存储所有赛季数据
 
+// 获取球队基本信息
 const { data } = await useAsyncData('team-overview', () => $fetch(`/sport/api/v3/team/${route.params.tid}`))
 const result = data.value?.result || data.value || {}
 teamInfo.value = result || {}
 honors.value = result.honors?.honors || []
+
+// 获取球队参与的赛事列表
+const { data: competitionsData } = await useAsyncData('team-competitions', () => $fetch(`/sport/api/v3/team/${route.params.tid}/competitions`))
+if (competitionsData.value?.result) {
+  competitions.value = competitionsData.value.result
+  // 检查是否已经存在"全部赛事"选项，避免重复添加
+  const hasAllOption = competitions.value.some(comp => comp.competitionId === 0)
+  if (!hasAllOption) {
+    competitions.value.unshift({ competitionId: 0, competitionName: '全部赛事' })
+  }
+} else {
+  // 模拟数据（已包含"全部赛事"选项）
+  competitions.value = [
+    { competitionId: 0, competitionName: '全部赛事' },
+    { competitionId: 82, competitionName: '英超' },
+    { competitionId: 120, competitionName: '西甲' },
+    { competitionId: 78, competitionName: '德甲' }
+  ]
+}
+
+// 获取所有赛事的赛季数据
+// 获取每个赛事的赛季数据
+for (const competition of competitions.value) {
+  if (competition.competitionId !== 0) { // 跳过"全部赛事"选项
+    try {
+      const { data: seasonsData } = await useAsyncData(`competition-${competition.competitionId}-seasons`, () => 
+        $fetch(`/sport/api/v3/competition/${competition.competitionId}/seasons`)
+      )
+      
+      if (seasonsData.value?.result?.seasons) {
+        const seasonsList = seasonsData.value.result.seasons.map(season => ({
+          seasonId: season.id,
+          seasonName: season.name,
+          competitionId: competition.competitionId,
+          year: season.year,
+          isCurrent: season.isCurrent
+        }))
+        allSeasons.value.set(competition.competitionId, seasonsList)
+        
+        // 将所有赛季添加到可用赛季列表中
+        availableSeasons.value.push(...seasonsList)
+      }
+    } catch (error) {
+      console.error(`获取赛事 ${competition.competitionId} 的赛季数据失败:`, error)
+    }
+  }
+}
+
+// 去重并按年份排序
+const uniqueSeasons = Array.from(
+  new Map(availableSeasons.value.map(season => [season.seasonId, season])).values()
+).sort((a, b) => b.year - a.year) // 按年份降序排列
+
+// 添加"全部赛季"选项
+seasons.value = [
+  { seasonId: 0, seasonName: '全部赛季', competitionId: 0 },
+  ...uniqueSeasons
+]
 
 function isTabActive(tab) {
     const path = route.fullPath
