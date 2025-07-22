@@ -15,7 +15,14 @@
       <div class="header-right">
         <div class="club">
           <img :src="player.clubLogo || '/default-club.png'" :alt="player.clubName" />
-          <span>{{ player.clubName }}</span>
+          <NuxtLink 
+            v-if="player.clubId"
+            :to="`/data/team-${player.clubId}`" 
+            class="club-link"
+          >
+            {{ player.clubName }}
+          </NuxtLink>
+          <span v-else>{{ player.clubName }}</span>
         </div>
         <div class="value">身价: {{ formatValue(player.marketValue) }}</div>
       </div>
@@ -33,7 +40,7 @@
             <li v-if="positions.secondaryPositionNames"><span class="label">辅位置:</span> <span class="value">{{ positions.secondaryPositionNames }}</span></li>
             <li v-if="positions.injuryStatus"><span class="label">伤病状态:</span> <span class="value">{{ positions.injuryStatus }}</span></li>
             <li><span class="label">国籍/省籍:</span> <span class="value">{{ player.nationality || '-' }}</span></li>
-            <li><span class="label">惯用脚:</span> <span class="value">{{ player.dominantFoot || '-' }}</span></li>
+            <li><span class="label">惯用脚:</span> <span class="value">{{ formatDominantFoot(player.dominantFoot) }}</span></li>
             <li><span class="label">出生日期:</span> <span class="value">{{ player.birthDate || '-' }}</span></li>
             <li><span class="label">身高:</span> <span class="value">{{ player.height ? player.height + 'cm' : '-'
                 }}</span></li>
@@ -69,10 +76,9 @@
         <section class="card abilities">
           <h2>能力评估</h2>
           <!-- Radar chart placeholder -->
-          <div id="ability-chart" class="chart">
-          </div>
-          <div class="chart" v-if="abilities.length === 0">
-            <span>暂无能力评估数据</span>
+          <div v-if="abilities && abilities.length > 0" id="ability-chart" class="chart"></div>
+          <div v-else class="chart">
+            <span>{{ abilitiesData ? '暂无能力评估数据' : '加载中...' }}</span>
           </div>
         </section>
         <!-- Position heatmap -->
@@ -102,8 +108,26 @@
                 <td>{{ t.transferDate }}</td>
                 <td>{{ transferTypeText(t.transferType) }}</td>
                 <td>{{ t.fee != null ? t.fee : '-' }}</td>
-                <td>{{ t.fromTeamName || '-' }}</td>
-                <td>{{ t.toTeamName || '-' }}</td>
+                <td>
+                  <NuxtLink 
+                    v-if="t.fromTeamId"
+                    :to="`/data/team-${t.fromTeamId}`" 
+                    class="team-link"
+                  >
+                    {{ t.fromTeamName || '-' }}
+                  </NuxtLink>
+                  <span v-else>{{ t.fromTeamName || '-' }}</span>
+                </td>
+                <td>
+                  <NuxtLink 
+                    v-if="t.toTeamId"
+                    :to="`/data/team-${t.toTeamId}`" 
+                    class="team-link"
+                  >
+                    {{ t.toTeamName || '-' }}
+                  </NuxtLink>
+                  <span v-else>{{ t.toTeamName || '-' }}</span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -173,7 +197,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as echarts from 'echarts'
 
@@ -187,20 +211,39 @@ const positions = ref({})
 const transfers = ref([])
 const seasonStats = ref({})
 
-const fetchData = async () => {
-  const [p, ab, h, pos, ss, tr] = await Promise.all([
-    $fetch(`/sport/api/v3/player/${playerId}`),
-    $fetch(`/sport/api/v3/player/${playerId}/abilities`),
-    $fetch(`/sport/api/v3/player/${playerId}/honors`),
-    $fetch(`/sport/api/v3/player/${playerId}/positions`),
-    $fetch(`/sport/api/v3/player/${playerId}/season-stats`),
-    $fetch(`/sport/api/v3/player/${playerId}/transfers`)
-  ])
-  if (p.code === 1 && p.result) player.value = p.result
-  if (ab.code === 1 && ab.result) abilities.value = ab.result.abilities || []
+// 使用 SSR 数据获取
+const { data: playerData } = await useAsyncData(`player-${playerId}`, () => 
+  $fetch(`/sport/api/v3/player/${playerId}`)
+)
+const { data: abilitiesData } = await useAsyncData(`player-abilities-${playerId}`, () => 
+  $fetch(`/sport/api/v3/player/${playerId}/abilities`)
+)
+const { data: honorsData } = await useAsyncData(`player-honors-${playerId}`, () => 
+  $fetch(`/sport/api/v3/player/${playerId}/honors`)
+)
+const { data: positionsData } = await useAsyncData(`player-positions-${playerId}`, () => 
+  $fetch(`/sport/api/v3/player/${playerId}/positions`)
+)
+const { data: seasonStatsData } = await useAsyncData(`player-season-stats-${playerId}`, () => 
+  $fetch(`/sport/api/v3/player/${playerId}/season-stats`)
+)
+const { data: transfersData } = await useAsyncData(`player-transfers-${playerId}`, () => 
+  $fetch(`/sport/api/v3/player/${playerId}/transfers`)
+)
+
+// 处理响应数据
+const processData = () => {
+  if (playerData.value?.code === 1 && playerData.value?.result) {
+    player.value = playerData.value.result
+  }
+  
+  if (abilitiesData.value?.code === 1 && abilitiesData.value?.result) {
+    abilities.value = abilitiesData.value.result.abilities || []
+  }
+  
   // 兼容荣誉字段变化
-  if (h.code === 1 && h.result && Array.isArray(h.result.honors)) {
-    honors.value = h.result.honors.map(honor => ({
+  if (honorsData.value?.code === 1 && honorsData.value?.result && Array.isArray(honorsData.value.result.honors)) {
+    honors.value = honorsData.value.result.honors.map(honor => ({
       honorName: honor.honorName,
       honorImage: honor.honorImage,
       count: honor.count,
@@ -209,52 +252,113 @@ const fetchData = async () => {
   } else {
     honors.value = []
   }
-  if (pos.code === 1 && pos.result) positions.value = pos.result
+  
+  if (positionsData.value?.code === 1 && positionsData.value?.result) {
+    positions.value = positionsData.value.result
+  }
+  
   // 赛季统计兼容字段
-  if (ss.code === 1 && ss.result) {
+  if (seasonStatsData.value?.code === 1 && seasonStatsData.value?.result) {
     seasonStats.value = {
-      matchesTotal: ss.result.matchesTotal || 0,
-      goals: ss.result.goals || 0,
-      assists: ss.result.assists || 0,
-      averageRating: ss.result.averageRating || '-',
-      minutesPlayed: ss.result.minutesPlayed || 0,
-      yellowCards: ss.result.yellowCards || 0,
-      redCards: ss.result.redCards || 0,
-      goalsPerMatch: ss.result.goalsPerMatch || 0,
-      assistsPerMatch: ss.result.assistsPerMatch || 0,
-      detailedStatsJson: ss.result.detailedStatsJson || '{}'
+      matchesTotal: seasonStatsData.value.result.matchesTotal || 0,
+      matchesStarter: seasonStatsData.value.result.matchesStarter || 0,
+      matchesSubstitute: seasonStatsData.value.result.matchesSubstitute || 0,
+      goals: seasonStatsData.value.result.goals || 0,
+      assists: seasonStatsData.value.result.assists || 0,
+      averageRating: seasonStatsData.value.result.averageRating || '-',
+      minutesPlayed: seasonStatsData.value.result.minutesPlayed || 0,
+      yellowCards: seasonStatsData.value.result.yellowCards || 0,
+      redCards: seasonStatsData.value.result.redCards || 0,
+      goalsPerMatch: seasonStatsData.value.result.goalsPerMatch || 0,
+      assistsPerMatch: seasonStatsData.value.result.assistsPerMatch || 0,
+      detailedStatsJson: seasonStatsData.value.result.detailedStatsJson || '{}'
     }
   } else {
-    seasonStats.value = { matchesTotal: 0, goals: 0, assists: 0, averageRating: '-', minutesPlayed: 0, yellowCards: 0, redCards: 0, goalsPerMatch: 0, assistsPerMatch: 0, detailedStatsJson: '{}' }
+    seasonStats.value = { 
+      matchesTotal: 0, 
+      matchesStarter: 0, 
+      matchesSubstitute: 0, 
+      goals: 0, 
+      assists: 0, 
+      averageRating: '-', 
+      minutesPlayed: 0, 
+      yellowCards: 0, 
+      redCards: 0, 
+      goalsPerMatch: 0, 
+      assistsPerMatch: 0, 
+      detailedStatsJson: '{}' 
+    }
   }
-  if (tr.code === 1 && tr.result && Array.isArray(tr.result.transfers)) {
-    transfers.value.splice(0, transfers.value.length, ...tr.result.transfers)
+  
+  if (transfersData.value?.code === 1 && transfersData.value?.result && Array.isArray(transfersData.value.result.transfers)) {
+    transfers.value.splice(0, transfers.value.length, ...transfersData.value.result.transfers)
   } else {
     transfers.value.splice(0, transfers.value.length)
   }
-
-  // render charts
-  renderAbilityChart()
-  renderHeatmap()
 }
+
+// 初始化数据处理
+processData()
 
 const formatValue = (val) => {
   if (!val) return '0万欧'
   return (val / 10000).toFixed(1) + '万欧'
 }
 
+const formatDominantFoot = (foot) => {
+  const footMap = {
+    'left': '左脚',
+    'right': '右脚',
+    'both': '双脚'
+  }
+  return footMap[foot] || foot || '-'
+}
+
 const renderAbilityChart = () => {
   const chartDom = document.getElementById('ability-chart')
-  if (!chartDom || abilities.value.length === 0) return
+  if (!chartDom || !abilities.value || abilities.value.length === 0) return
+  
   // 清空容器，彻底防止重复渲染导致 DOM 错误
   chartDom.innerHTML = ''
-  const chart = echarts.init(chartDom)
-  const names = abilities.value.map(a => a.name)
-  const values = abilities.value.map(a => a.value)
-  chart.setOption({
-    radar: { indicator: names.map((n, i) => ({ name: n, max: 100 })) },
-    series: [{ type: 'radar', data: [{ value: values, name: player.value.name }] }]
-  })
+  
+  try {
+    const chart = echarts.init(chartDom)
+    const names = abilities.value.map(a => a.name)
+    const values = abilities.value.map(a => a.value)
+    
+    chart.setOption({
+      tooltip: {
+        trigger: 'item'
+      },
+      radar: { 
+        indicator: names.map((n, i) => ({ name: n, max: 100 })),
+        radius: '70%'
+      },
+      series: [{ 
+        type: 'radar', 
+        data: [{ 
+          value: values, 
+          name: player.value.name || '球员能力',
+          areaStyle: {
+            opacity: 0.3
+          },
+          lineStyle: {
+            color: '#e53e3e'
+          },
+          itemStyle: {
+            color: '#e53e3e'
+          }
+        }] 
+      }]
+    })
+    
+    // 响应式调整
+    window.addEventListener('resize', () => {
+      chart.resize()
+    })
+  } catch (error) {
+    console.error('渲染能力图表失败:', error)
+  }
 }
 
 const renderHeatmap = () => {
@@ -279,7 +383,24 @@ const statKeyMap = {
   shots_on_target: '射正数'
 }
 
-onMounted(fetchData)
+// 监听数据变化以重新渲染图表
+watch([abilitiesData, playerData], () => {
+  // 重新处理数据
+  processData()
+  
+  nextTick(() => {
+    renderAbilityChart()
+    renderHeatmap()
+  })
+}, { immediate: false })
+
+onMounted(() => {
+  // 确保在DOM挂载后渲染图表
+  setTimeout(() => {
+    renderAbilityChart()
+    renderHeatmap()
+  }, 100)
+})
 </script>
 
 <style scoped>
@@ -375,6 +496,30 @@ onMounted(fetchData)
   height: 32px;
   object-fit: cover;
   border-radius: 4px;
+}
+
+.club-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.club-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.team-link {
+  color: #e74c3c;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.team-link:hover {
+  color: #c0392b;
+  text-decoration: underline;
 }
 
 .value {

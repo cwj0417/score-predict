@@ -60,6 +60,9 @@
                         <NuxtLink class="tab" :class="{ active: isTabActive('analyze') }" :to="'/data/comp-' + route.params.cid + '/' + route.params.sid + '/analyze'">
                             分析
                         </NuxtLink>
+                        <NuxtLink class="tab" :class="{ active: isTabActive('ranking') }" :to="'/data/comp-' + route.params.cid + '/' + route.params.sid + '/ranking'">
+                            最佳
+                        </NuxtLink>
                     </div>
                 </div>
             </div>
@@ -112,7 +115,7 @@ function selectSeason(season) {
 function isTabActive(tab) {
     // 判断当前tab是否激活
     const path = route.fullPath
-    if (!tab) return !/\/(point|data|analyze)$/.test(path)
+    if (!tab) return !/\/(point|data|analyze|ranking)$/.test(path)
     return path.endsWith('/' + tab)
 }
 </script>
