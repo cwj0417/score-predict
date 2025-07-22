@@ -29,11 +29,16 @@
         <section class="card">
           <h2>基本资料</h2>
           <ul>
+            <li><span class="label">主位置:</span> <span class="value">{{ positions.mainPositionName || '-' }}</span></li>
+            <li v-if="positions.secondaryPositionNames"><span class="label">辅位置:</span> <span class="value">{{ positions.secondaryPositionNames }}</span></li>
+            <li v-if="positions.injuryStatus"><span class="label">伤病状态:</span> <span class="value">{{ positions.injuryStatus }}</span></li>
             <li><span class="label">国籍/省籍:</span> <span class="value">{{ player.nationality || '-' }}</span></li>
             <li><span class="label">惯用脚:</span> <span class="value">{{ player.dominantFoot || '-' }}</span></li>
             <li><span class="label">出生日期:</span> <span class="value">{{ player.birthDate || '-' }}</span></li>
-            <li><span class="label">身高:</span> <span class="value">{{ player.height ? player.height + 'cm' : '-' }}</span></li>
-            <li><span class="label">体重:</span> <span class="value">{{ player.weight ? player.weight + 'kg' : '-' }}</span></li>
+            <li><span class="label">身高:</span> <span class="value">{{ player.height ? player.height + 'cm' : '-'
+                }}</span></li>
+            <li><span class="label">体重:</span> <span class="value">{{ player.weight ? player.weight + 'kg' : '-'
+                }}</span></li>
             <li><span class="label">合同截止日期:</span> <span class="value">{{ player.contractEndDate || '-' }}</span></li>
           </ul>
         </section>
@@ -47,8 +52,11 @@
         <section class="card honors">
           <h2>个人荣誉</h2>
           <ul v-if="honors.length > 0">
-            <li v-for="honor in honors" :key="honor.id">
-              <span class="year">{{ honor.year }}</span> {{ honor.honorName }} x{{ honor.times }}
+            <li v-for="(honor, idx) in honors" :key="idx">
+              <img v-if="honor.honorImage" :src="honor.honorImage" alt="" style="width:32px;height:32px;margin-right:8px;vertical-align:middle;" />
+              <span class="year">{{ honor.years }}</span>
+              <span>{{ honor.honorName }}</span>
+              <span v-if="honor.count">x{{ honor.count }}</span>
             </li>
           </ul>
           <p v-else class="no-data">暂无荣誉记录</p>
@@ -62,7 +70,9 @@
           <h2>能力评估</h2>
           <!-- Radar chart placeholder -->
           <div id="ability-chart" class="chart">
-            <span v-if="abilities.length === 0">暂无能力评估数据</span>
+          </div>
+          <div class="chart" v-if="abilities.length === 0">
+            <span>暂无能力评估数据</span>
           </div>
         </section>
         <!-- Position heatmap -->
@@ -77,13 +87,23 @@
         <section class="card transfers">
           <h2>转会记录</h2>
           <table v-if="transfers.length > 0">
-            <thead><tr><th>日期</th><th>类型</th><th>费用(万)</th><th>球队</th></tr></thead>
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>类型</th>
+                <th>费用(万)</th>
+                <th>来自</th>
+                <th>去向</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr v-for="t in transfers" :key="t.transferDate + t.toTeamId">
+              <tr v-for="(t, idx) in transfers"
+                :key="t.transferDate + '-' + (t.toTeamId || '') + '-' + (t.fromTeamId || '') + '-' + idx">
                 <td>{{ t.transferDate }}</td>
-                <td>{{ t.transferType }}</td>
-                <td>{{ t.fee || '-' }}</td>
-                <td>{{ t.toTeamName || t.fromTeamName }}</td>
+                <td>{{ transferTypeText(t.transferType) }}</td>
+                <td>{{ t.fee != null ? t.fee : '-' }}</td>
+                <td>{{ t.fromTeamName || '-' }}</td>
+                <td>{{ t.toTeamName || '-' }}</td>
               </tr>
             </tbody>
           </table>
@@ -93,10 +113,58 @@
         <section class="card stats">
           <h2>本赛季统计</h2>
           <div class="stats-grid">
-            <div class="stat-item"><div class="value">{{ seasonStats.matchesTotal }}</div><div class="label">出场次数</div></div>
-            <div class="stat-item"><div class="value">{{ seasonStats.goals }}</div><div class="label">进球数</div></div>
-            <div class="stat-item"><div class="value">{{ seasonStats.assists }}</div><div class="label">助攻数</div></div>
-            <div class="stat-item"><div class="value">{{ seasonStats.averageRating }}</div><div class="label">平均评分</div></div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.matchesTotal }}</div>
+              <div class="label">出场次数</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.matchesStarter }}</div>
+              <div class="label">首发</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.matchesSubstitute }}</div>
+              <div class="label">替补</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.minutesPlayed }}</div>
+              <div class="label">出场分钟</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.goals }}</div>
+              <div class="label">进球数</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.assists }}</div>
+              <div class="label">助攻数</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.yellowCards }}</div>
+              <div class="label">黄牌</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.redCards }}</div>
+              <div class="label">红牌</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.goalsPerMatch }}</div>
+              <div class="label">场均进球</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.assistsPerMatch }}</div>
+              <div class="label">场均助攻</div>
+            </div>
+            <div class="stat-item">
+              <div class="value">{{ seasonStats.averageRating || '-' }}</div>
+              <div class="label">平均评分</div>
+            </div>
+          </div>
+          <div v-if="seasonStats.detailedStatsJson" class="stats-detail">
+            <h3 style="margin:16px 0 8px 0;font-size:15px;color:#e53e3e;">详细数据</h3>
+            <ul class="stats-detail-list">
+              <li v-for="(val, key) in JSON.parse(seasonStats.detailedStatsJson)" :key="key" class="stats-detail-item">
+                <span class="stats-detail-label">{{ statKeyMap[key] || key }}:</span> {{ val }}
+              </li>
+            </ul>
           </div>
         </section>
       </div>
@@ -129,12 +197,41 @@ const fetchData = async () => {
     $fetch(`/sport/api/v3/player/${playerId}/transfers`)
   ])
   if (p.code === 1 && p.result) player.value = p.result
-  if (ab.code === 1) abilities.value = ab.result?.abilities || []
-  if (h.code === 1) honors.value = h.result?.honors || []
+  if (ab.code === 1 && ab.result) abilities.value = ab.result.abilities || []
+  // 兼容荣誉字段变化
+  if (h.code === 1 && h.result && Array.isArray(h.result.honors)) {
+    honors.value = h.result.honors.map(honor => ({
+      honorName: honor.honorName,
+      honorImage: honor.honorImage,
+      count: honor.count,
+      years: honor.years
+    }))
+  } else {
+    honors.value = []
+  }
   if (pos.code === 1 && pos.result) positions.value = pos.result
-  // ensure seasonStats always has defaults
-  seasonStats.value = (ss.code === 1 && ss.result) ? ss.result : { matchesTotal: 0, goals: 0, assists: 0, averageRating: 0 }
-  if (tr.code === 1) transfers.value = tr.result?.transfers || []
+  // 赛季统计兼容字段
+  if (ss.code === 1 && ss.result) {
+    seasonStats.value = {
+      matchesTotal: ss.result.matchesTotal || 0,
+      goals: ss.result.goals || 0,
+      assists: ss.result.assists || 0,
+      averageRating: ss.result.averageRating || '-',
+      minutesPlayed: ss.result.minutesPlayed || 0,
+      yellowCards: ss.result.yellowCards || 0,
+      redCards: ss.result.redCards || 0,
+      goalsPerMatch: ss.result.goalsPerMatch || 0,
+      assistsPerMatch: ss.result.assistsPerMatch || 0,
+      detailedStatsJson: ss.result.detailedStatsJson || '{}'
+    }
+  } else {
+    seasonStats.value = { matchesTotal: 0, goals: 0, assists: 0, averageRating: '-', minutesPlayed: 0, yellowCards: 0, redCards: 0, goalsPerMatch: 0, assistsPerMatch: 0, detailedStatsJson: '{}' }
+  }
+  if (tr.code === 1 && tr.result && Array.isArray(tr.result.transfers)) {
+    transfers.value.splice(0, transfers.value.length, ...tr.result.transfers)
+  } else {
+    transfers.value.splice(0, transfers.value.length)
+  }
 
   // render charts
   renderAbilityChart()
@@ -149,11 +246,13 @@ const formatValue = (val) => {
 const renderAbilityChart = () => {
   const chartDom = document.getElementById('ability-chart')
   if (!chartDom || abilities.value.length === 0) return
+  // 清空容器，彻底防止重复渲染导致 DOM 错误
+  chartDom.innerHTML = ''
   const chart = echarts.init(chartDom)
   const names = abilities.value.map(a => a.name)
   const values = abilities.value.map(a => a.value)
   chart.setOption({
-    radar: { indicator: names.map((n,i) => ({ name: n, max: 100 })) },
+    radar: { indicator: names.map((n, i) => ({ name: n, max: 100 })) },
     series: [{ type: 'radar', data: [{ value: values, name: player.value.name }] }]
   })
 }
@@ -162,14 +261,32 @@ const renderHeatmap = () => {
   // TODO: parse positions.positionHeatmapJson and render
 }
 
+const transferTypeText = (type) => {
+  switch (type) {
+    case 'join': return '加盟';
+    case 'leave': return '离队';
+    case 'loan': return '租借';
+    case 'return': return '回归';
+    default: return type || '-';
+  }
+}
+
+const statKeyMap = {
+  shots_total: '射门总数',
+  passes_total: '传球总数',
+  pass_accuracy: '传球成功率',
+  shot_accuracy: '射门命中率',
+  shots_on_target: '射正数'
+}
+
 onMounted(fetchData)
 </script>
 
 <style scoped>
-.player-page { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 16px; 
+.player-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 16px;
   background: #f5f5f5;
   min-height: 100vh;
@@ -178,89 +295,89 @@ onMounted(fetchData)
   margin: 0;
 }
 
-.player-header { 
-  display: flex; 
-  justify-content: space-between; 
+.player-header {
+  display: flex;
+  justify-content: space-between;
   background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-  color: white; 
-  padding: 20px; 
+  color: white;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(229, 62, 62, 0.3);
 }
 
-.header-left { 
-  display: flex; 
-  align-items: center; 
-  gap: 16px; 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.avatar { 
-  position: relative; 
-  width: 80px; 
-  height: 80px; 
-  border-radius: 50%; 
+.avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   overflow: hidden;
   border: 3px solid rgba(255, 255, 255, 0.3);
 }
 
-.avatar img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.shirt-number { 
-  position: absolute; 
-  bottom: -4px; 
-  right: -4px; 
-  background: #fff; 
-  color: #e53e3e; 
-  font-weight: bold; 
-  padding: 4px 8px; 
+.shirt-number {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #fff;
+  color: #e53e3e;
+  font-weight: bold;
+  padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
   min-width: 24px;
   text-align: center;
 }
 
-.info h1 { 
-  margin: 0; 
+.info h1 {
+  margin: 0;
   font-size: 24px;
   font-weight: 600;
 }
 
-.info small { 
-  font-size: 14px; 
+.info small {
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
-  margin-left: 8px; 
+  margin-left: 8px;
 }
 
-.position { 
-  margin-top: 4px; 
+.position {
+  margin-top: 4px;
   font-size: 16px;
   color: rgba(255, 255, 255, 0.9);
 }
 
-.header-right { 
-  display: flex; 
-  align-items: center; 
-  gap: 24px; 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
-.club { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
+.club {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.club img { 
-  width: 32px; 
-  height: 32px; 
-  object-fit: cover; 
-  border-radius: 4px; 
+.club img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
-.value { 
+.value {
   font-size: 16px;
   background: rgba(255, 255, 255, 0.2);
   padding: 8px 16px;
@@ -268,25 +385,26 @@ onMounted(fetchData)
   font-weight: 500;
 }
 
-.player-content { 
-  display: grid; 
-  grid-template-columns: 350px 1fr; 
+.player-content {
+  display: grid;
+  grid-template-columns: 350px 1fr;
   gap: 16px;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
-.card { 
-  background: white; 
-  padding: 20px; 
-  border-radius: 12px; 
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.card h2 { 
-  margin-top: 0; 
-  font-size: 18px; 
+.card h2 {
+  margin-top: 0;
+  font-size: 18px;
   margin-bottom: 16px;
   color: #333;
   font-weight: 600;
@@ -294,14 +412,14 @@ onMounted(fetchData)
   padding-bottom: 8px;
 }
 
-.card ul { 
-  list-style: none; 
-  padding: 0; 
-  margin: 0; 
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.card li { 
-  margin-bottom: 12px; 
+.card li {
+  margin-bottom: 12px;
   font-size: 14px;
   color: #666;
   display: flex;
@@ -327,27 +445,27 @@ onMounted(fetchData)
   text-align: right;
 }
 
-.biography p { 
+.biography p {
   line-height: 1.6;
   color: #666;
   margin: 0;
 }
 
-.honors li { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
+.honors li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   justify-content: flex-start;
 }
 
-.honors .year { 
+.honors .year {
   font-weight: bold;
   color: #e53e3e;
   min-width: 60px;
 }
 
-.chart { 
-  width: 100%; 
+.chart {
+  width: 100%;
   height: 240px;
   background: #f8f9fa;
   border-radius: 8px;
@@ -357,14 +475,15 @@ onMounted(fetchData)
   color: #999;
 }
 
-.transfers table { 
-  width: 100%; 
-  border-collapse: collapse; 
+.transfers table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.transfers th, .transfers td { 
-  padding: 12px 8px; 
-  text-align: left; 
+.transfers th,
+.transfers td {
+  padding: 12px 8px;
+  text-align: left;
   border-bottom: 1px solid #f0f0f0;
   font-size: 14px;
 }
@@ -379,29 +498,31 @@ onMounted(fetchData)
   color: #666;
 }
 
-.stats-grid { 
-  display: flex; 
-  justify-content: space-around;
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
-.stats-grid .stat-item { 
+.stats-grid .stat-item {
   text-align: center;
-  flex: 1;
+  flex: 1 1 160px;
   padding: 16px;
   background: #f8f9fa;
   border-radius: 8px;
+  min-width: 120px;
+  box-sizing: border-box;
 }
 
-.stats-grid .value { 
-  font-size: 24px; 
-  font-weight: bold; 
+.stats-grid .value {
+  font-size: 24px;
+  font-weight: bold;
   color: #e53e3e;
   margin-bottom: 4px;
 }
 
-.stats-grid .label { 
-  font-size: 12px; 
+.stats-grid .label {
+  font-size: 12px;
   color: #666;
   font-weight: 500;
 }
@@ -416,18 +537,23 @@ onMounted(fetchData)
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* 防止溢出父级 */
+  overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
   .player-content {
     grid-template-columns: 1fr;
   }
-  
+
   .player-header {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .header-right {
     justify-content: space-between;
   }
@@ -439,5 +565,24 @@ onMounted(fetchData)
   text-align: center;
   padding: 20px;
   margin: 0;
+}
+
+.stats-detail-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.stats-detail-item {
+  font-size: 13px;
+  color: #666;
+  flex: 0 1 160px;
+}
+.stats-detail-label {
+  font-weight: 500;
+  color: #333;
+  min-width: 80px;
+  display: inline-block;
 }
 </style>
