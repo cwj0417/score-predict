@@ -224,64 +224,120 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
 }
 
 .position-filter {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .filter-label {
-  font-weight: 500;
+  font-weight: 600;
   color: #333;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
 .filter-tabs {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .filter-tab {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
+  padding: 8px 20px;
+  border: 2px solid #e2e8f0;
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  min-width: 60px;
+  text-align: center;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.filter-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.5s;
+}
+
+.filter-tab:hover::before {
+  left: 100%;
 }
 
 .filter-tab:hover {
-  background: #f0f0f0;
+  border-color: var(--primary-light);
+  background: var(--primary-alpha-5);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-alpha-20);
 }
 
 .filter-tab.active {
-  background: #e53e3e;
+  background: var(--primary-gradient);
   color: white;
-  border-color: #e53e3e;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--primary-alpha-30);
+  font-weight: 600;
+}
+
+.filter-tab.active::before {
+  display: none;
 }
 
 .sort-control {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .sort-label {
-  font-weight: 500;
+  font-weight: 600;
   color: #333;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
 .sort-select {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   background: white;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-alpha-20);
+}
+
+.sort-select:hover {
+  border-color: var(--primary-light);
+  background: var(--primary-alpha-5);
 }
 
 .loading {
@@ -297,7 +353,7 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #e53e3e;
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -314,7 +370,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 60px;
-  color: #e53e3e;
+  color: var(--primary-color);
 }
 
 .error-message {
@@ -324,7 +380,7 @@ onMounted(() => {
 
 .retry-btn {
   padding: 8px 16px;
-  background: #e53e3e;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -332,7 +388,7 @@ onMounted(() => {
 }
 
 .retry-btn:hover {
-  background: #d53e3e;
+  background: var(--primary-dark);
 }
 
 .lineup-content {
@@ -407,7 +463,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e53e3e;
+  background: var(--primary-color);
   color: white;
   border-radius: 50%;
   font-weight: bold;
@@ -514,7 +570,7 @@ onMounted(() => {
 }
 
 .stat-value:nth-child(4) {
-  color: #e53e3e;
+  color: var(--primary-color);
 }
 
 .stat-label {
@@ -529,13 +585,25 @@ onMounted(() => {
   
   .controls {
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
     align-items: stretch;
+    padding: 16px 20px;
   }
   
   .position-filter,
   .sort-control {
-    justify-content: center;
+    justify-content: flex-start;
+  }
+  
+  .filter-tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .filter-tab {
+    padding: 6px 16px;
+    font-size: 13px;
+    min-width: 50px;
   }
   
   .players-grid {

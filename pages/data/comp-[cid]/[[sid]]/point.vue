@@ -206,8 +206,8 @@ const getRankClass = (position) => {
 
 .filter-item.active {
   background: #fff !important;
-  color: #e74c3c !important;
-  border-left-color: #e74c3c !important;
+  color: var(--primary-color) !important;
+  border-left-color: var(--primary-color) !important;
   font-weight: 500 !important;
 }
 
@@ -268,7 +268,7 @@ const getRankClass = (position) => {
 }
 
 .rank-number.top-three {
-  background: #e74c3c;
+  background: var(--primary-color);
   color: #fff;
 }
 
@@ -300,14 +300,14 @@ const getRankClass = (position) => {
 }
 
 .team-link {
-  color: #e74c3c !important;
+  color: var(--primary-color) !important;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .team-link:hover {
-  color: #c0392b !important;
+  color: var(--primary-dark) !important;
   text-decoration: underline;
 }
 
@@ -328,7 +328,7 @@ const getRankClass = (position) => {
 }
 
 .losses {
-  color: #e74c3c;
+  color: var(--error-color);
 }
 
 .goals-for,
@@ -350,7 +350,7 @@ const getRankClass = (position) => {
 
 .goal-difference.negative,
 .avg-goal-difference.negative {
-  color: #e74c3c;
+  color: var(--error-color);
 }
 
 .avg-goals-for,
@@ -399,7 +399,7 @@ const getRankClass = (position) => {
   
   .filter-item.active {
     border-left: none !important;
-    border-bottom-color: #e74c3c !important;
+    border-bottom-color: var(--primary-color) !important;
   }
   
   .standings-table {

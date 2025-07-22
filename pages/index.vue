@@ -126,7 +126,7 @@ body {
 
 .database-wrapper .database-container .main-area .left-nav .catalog .catalog-wrapper .area-levels .area .area-title .text {
     font-size: 14px;
-    color: #DE1E31;
+    color: var(--primary-color);
     float: left;
     margin-left: 20px;
     font-weight: bold
@@ -490,8 +490,8 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-related .nav-wrapper .table-head .tabs .tab.active {
-    color: #E74C5B;
-    box-shadow: 0px -2px 0px 0px #E74C5B inset
+    color: var(--primary-color);
+    box-shadow: 0px -2px 0px 0px var(--primary-color) inset
 }
 
 .database-wrapper .database-container .main-area .right-data .table-related .nav-wrapper .table-head .select {
@@ -635,8 +635,8 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .stage .stage_name.active {
-    border: 1px solid #E74C5B;
-    color: #E74C5B
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .stage .stage_name::before {
@@ -694,16 +694,16 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .rounds .wrapper .round.nostart {
-    color: #de1e31
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .rounds .wrapper .round:hover {
-    background-color: #de1e31;
+    background-color: var(--primary-color);
     color: white
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .rounds .wrapper .round.active {
-    background-color: #de1e31;
+    background-color: var(--primary-color);
     color: white
 }
 
@@ -1373,12 +1373,12 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .home .link,.database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .away .link {
-    color: #de1e31;
+    color: var(--primary-color);
     cursor: pointer
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .home .link:hover,.database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .away .link:hover {
-    color: #e30c0c
+    color: var(--primary-dark)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .odd-asian .odd-wrapper,.database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .odd-europe .odd-wrapper {
@@ -1398,12 +1398,12 @@ body {
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .data a {
     margin: 0 6px;
-    color: #de1e31;
+    color: var(--primary-color);
     cursor: pointer
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .match-table-type .table-match .table-wrapper.match table tbody tr .data a:hover {
-    color: #e30c0c
+    color: var(--primary-dark)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type {
@@ -1434,8 +1434,8 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .stage .stage_name.active {
-    border: 1px solid #E74C5B;
-    color: #E74C5B
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .stage .stage_name::before {
@@ -1493,16 +1493,16 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .rounds .wrapper .round.nostart {
-    color: #de1e31
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .rounds .wrapper .round:hover {
-    background-color: #de1e31;
+    background-color: var(--primary-color);
     color: white
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .rounds .wrapper .round.active {
-    background-color: #de1e31;
+    background-color: var(--primary-color);
     color: white
 }
 
@@ -1617,7 +1617,7 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .slider .tab.active {
-    color: #E74C5B;
+    color: var(--primary-color);
     background-color: white
 }
 
@@ -1925,7 +1925,7 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .right .table-wrapper table tbody tr .team .team-wrapper .team-name {
-    color: #de1e31
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .right .table-wrapper table tbody tr .play-rank {
@@ -1954,7 +1954,7 @@ body {
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .right .table-wrapper table tbody tr .play-player .player-wrapper .name {
     font-size: 12px;
-    color: #de1e31
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .right .table-wrapper table tbody tr .play-team {
@@ -1979,7 +1979,7 @@ body {
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .right .table-wrapper table tbody tr .play-team .team-wrapper .name {
     font-size: 12px;
-    color: #de1e31
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .data-wrapper .slider-type .select_wrapper .right .table-wrapper table tbody tr .team-rank {
@@ -2132,7 +2132,7 @@ body {
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .news-wrapper .news_list .new_item .text .title:hover {
-    color: #E74C5B
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .main-area .right-data .table-show .table-show-wrapper .news-wrapper .news_list .new_item .text .time {
@@ -2263,7 +2263,7 @@ body {
 
 .database-wrapper .database-container .left .catalog .catalog-wrapper .area-levels .area .area-title .text {
     font-size: 14px;
-    color: #DE1E31;
+    color: var(--primary-color);
     float: left;
     margin-left: 20px;
     font-weight: bold
@@ -2581,7 +2581,7 @@ body {
 .database-wrapper .database-container .right .recent-comps .title .part-title .red-line {
     width: 4px;
     height: 16px;
-    background-color: #DE1E31;
+    background-color: var(--primary-color);
     margin-left: 20px;
     margin-right: 10px;
     margin-bottom: 2px
@@ -2625,7 +2625,7 @@ body {
 }
 
 .database-wrapper .database-container .right .recent-comps .title .checkout_btn .football.active .text,.database-wrapper .database-container .right .recent-comps .title .checkout_btn .basketball.active .text {
-    color: #E74C5B
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .right .recent-comps .title .checkout_btn .basketball {
@@ -2793,7 +2793,7 @@ body {
 .database-wrapper .database-container .right .hot-comps .title .part-title .red-line {
     width: 4px;
     height: 16px;
-    background-color: #DE1E31;
+    background-color: var(--primary-color);
     margin-left: 20px;
     margin-right: 10px;
     margin-bottom: 2px
@@ -2837,7 +2837,7 @@ body {
 }
 
 .database-wrapper .database-container .right .hot-comps .title .checkout_btn .football.active .text,.database-wrapper .database-container .right .hot-comps .title .checkout_btn .basketball.active .text {
-    color: #E74C5B
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .right .hot-comps .title .checkout_btn .basketball {
@@ -2943,7 +2943,7 @@ body {
 .database-wrapper .database-container .right .hot-teams .title .part-title .red-line {
     width: 4px;
     height: 16px;
-    background-color: #DE1E31;
+    background-color: var(--primary-color);
     margin-left: 20px;
     margin-right: 10px;
     margin-bottom: 2px
@@ -2987,7 +2987,7 @@ body {
 }
 
 .database-wrapper .database-container .right .hot-teams .title .checkout_btn .football.active .text,.database-wrapper .database-container .right .hot-teams .title .checkout_btn .basketball.active .text {
-    color: #E74C5B
+    color: var(--primary-color)
 }
 
 .database-wrapper .database-container .right .hot-teams .title .checkout_btn .basketball {
@@ -3350,7 +3350,7 @@ body {
 
 .database-wrapper .database-container .right .search-result .table-wrapper table tbody tr.match_data td .comp .comp-name {
     font-size: 12px;
-    color: #e30c0c
+    color: var(--primary-dark)
 }
 
 .database-wrapper .database-container .right .search-result .table-wrapper table tbody tr.match_data td .country {

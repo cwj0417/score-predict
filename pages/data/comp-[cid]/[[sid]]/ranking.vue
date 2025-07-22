@@ -202,9 +202,9 @@ const formatStatValue = (value) => {
 }
 
 .entity-tabs button.active {
-  color: #e74c3c;
+  color: var(--primary-color);
   background: #fff;
-  border-bottom-color: #e74c3c;
+  border-bottom-color: var(--primary-color);
 }
 
 .ranking-content {
@@ -243,8 +243,8 @@ const formatStatValue = (value) => {
 
 .category-item.active {
   background: #fff !important;
-  color: #e74c3c !important;
-  border-left-color: #e74c3c !important;
+  color: var(--primary-color) !important;
+  border-left-color: var(--primary-color) !important;
   font-weight: 500 !important;
 }
 
@@ -319,7 +319,7 @@ const formatStatValue = (value) => {
 
 .name,
 .team-name {
-  color: #e74c3c;
+  color: var(--primary-color);
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -328,7 +328,7 @@ const formatStatValue = (value) => {
 
 .player-link,
 .team-link {
-  color: #e74c3c !important;
+  color: var(--primary-color) !important;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
@@ -336,7 +336,7 @@ const formatStatValue = (value) => {
 
 .player-link:hover,
 .team-link:hover {
-  color: #c0392b !important;
+  color: var(--primary-dark) !important;
   text-decoration: underline;
 }
 
@@ -379,7 +379,7 @@ const formatStatValue = (value) => {
   
   .category-item.active {
     border-left: none;
-    border-bottom-color: #e74c3c;
+    border-bottom-color: var(--primary-color);
   }
   
   .ranking-table {

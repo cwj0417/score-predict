@@ -181,7 +181,7 @@ function isTabActive(tab) {
     flex-wrap: wrap;
 }
 .team-header-value {
-    background: #e94d4d;
+    background: var(--primary-color);
     color: #fff;
     border-radius: 16px;
     padding: 12px 24px;
@@ -224,7 +224,7 @@ function isTabActive(tab) {
 }
 .honor-num {
     font-size: 18px;
-    color: #e94d4d;
+    color: var(--primary-color);
     font-weight: bold;
 }
 .honor-more {
@@ -250,9 +250,9 @@ function isTabActive(tab) {
     border-bottom: 2px solid transparent;
 }
 .tab.active {
-    color: #e94d4d;
+    color: var(--primary-color);
     font-weight: bold;
-    border-bottom: 2px solid #e94d4d;
+    border-bottom: 2px solid var(--primary-color);
     background: #fff;
 }
 </style>

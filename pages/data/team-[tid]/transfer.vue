@@ -327,9 +327,9 @@ function formatDate(dateStr) {
 }
 
 .filter-btn.active {
-  background: #e94d4d;
+  background: var(--primary-color);
   color: #fff;
-  border-color: #e94d4d;
+  border-color: var(--primary-color);
 }
 
 .season-label {
@@ -350,7 +350,7 @@ function formatDate(dateStr) {
 
 .season-select:focus {
   outline: none;
-  border-color: #e94d4d;
+  border-color: var(--primary-color);
 }
 
 .section-title {

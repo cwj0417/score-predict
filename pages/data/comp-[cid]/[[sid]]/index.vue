@@ -160,8 +160,8 @@ async function fetchMatches() {
     text-align: center;
     padding: 2px 6px;
     font-size: 12px;
-    color: #c00;
-    border: 1px solid #f2d6d6;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-alpha-20);
     border-radius: 4px;
     background: #fff;
     cursor: pointer;
@@ -174,8 +174,8 @@ async function fetchMatches() {
 }
 .stage-btn.active {
     color: #fff;
-    background: #e94d4d;
-    border: 2px solid #e94d4d;
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
 }
 .group-filter {
     display: flex;
@@ -198,7 +198,7 @@ async function fetchMatches() {
 }
 .group-btn.active {
     color: #fff;
-    background: #e94d4d;
+    background: var(--primary-color);
     border-radius: 16px 0 0 16px;
 }
 .group-btn:first-child.active {

@@ -351,9 +351,9 @@ function formatInteger(value) {
 }
 
 .filter-btn.active {
-  background: #e94d4d;
+  background: var(--primary-color);
   color: #fff;
-  border-color: #e94d4d;
+  border-color: var(--primary-color);
 }
 
 .filter-right {
@@ -378,7 +378,7 @@ function formatInteger(value) {
 
 .season-select:focus {
   outline: none;
-  border-color: #e94d4d;
+  border-color: var(--primary-color);
 }
 
 .team-stats {

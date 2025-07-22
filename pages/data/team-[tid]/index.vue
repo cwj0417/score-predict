@@ -215,9 +215,9 @@ function goToPage(page) {
 }
 
 .filter-btn.active {
-  background: #e94d4d;
+  background: var(--primary-color);
   color: #fff;
-  border-color: #e94d4d;
+  border-color: var(--primary-color);
 }
 
 .filter-right {
@@ -292,7 +292,7 @@ function goToPage(page) {
 }
 
 .score {
-  color: #e94d4d;
+  color: var(--primary-color);
 }
 
 .vs {

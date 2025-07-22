@@ -183,7 +183,7 @@
             </div>
           </div>
           <div v-if="seasonStats.detailedStatsJson" class="stats-detail">
-            <h3 style="margin:16px 0 8px 0;font-size:15px;color:#e53e3e;">详细数据</h3>
+            <h3 style="margin:16px 0 8px 0;font-size:15px;color:var(--primary-color);">详细数据</h3>
             <ul class="stats-detail-list">
               <li v-for="(val, key) in JSON.parse(seasonStats.detailedStatsJson)" :key="key" class="stats-detail-item">
                 <span class="stats-detail-label">{{ statKeyMap[key] || key }}:</span> {{ val }}
@@ -343,10 +343,10 @@ const renderAbilityChart = () => {
             opacity: 0.3
           },
           lineStyle: {
-            color: '#e53e3e'
+            color: 'var(--primary-color)'
           },
           itemStyle: {
-            color: '#e53e3e'
+            color: 'var(--primary-color)'
           }
         }] 
       }]
@@ -419,11 +419,11 @@ onMounted(() => {
 .player-header {
   display: flex;
   justify-content: space-between;
-  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  background: var(--primary-gradient);
   color: white;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(229, 62, 62, 0.3);
+  box-shadow: 0 4px 16px var(--primary-alpha-30);
 }
 
 .header-left {
@@ -452,7 +452,7 @@ onMounted(() => {
   bottom: -4px;
   right: -4px;
   background: #fff;
-  color: #e53e3e;
+  color: var(--primary-color);
   font-weight: bold;
   padding: 4px 8px;
   border-radius: 12px;
@@ -511,14 +511,14 @@ onMounted(() => {
 }
 
 .team-link {
-  color: #e74c3c;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .team-link:hover {
-  color: #c0392b;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
@@ -605,7 +605,7 @@ onMounted(() => {
 
 .honors .year {
   font-weight: bold;
-  color: #e53e3e;
+  color: var(--primary-color);
   min-width: 60px;
 }
 
@@ -662,7 +662,7 @@ onMounted(() => {
 .stats-grid .value {
   font-size: 24px;
   font-weight: bold;
-  color: #e53e3e;
+  color: var(--primary-color);
   margin-bottom: 4px;
 }
 

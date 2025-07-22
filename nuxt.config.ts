@@ -17,6 +17,8 @@ export default defineNuxtConfig({
 
   modules: ['nuxt-echarts'],
   
+  css: ['~/assets/css/theme.css'],
+  
   echarts: {
     charts: ['BarChart', 'LineChart'],
     components: ['GridComponent', 'TooltipComponent', 'LegendComponent']
